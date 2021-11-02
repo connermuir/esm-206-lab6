@@ -7,24 +7,69 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(palmerpenguins)
+library(broom)
+library(equatiomatic)
 ```
 
-## R Markdown
+## Rank Based Test Example 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Mann-Whitney U (non-parametric alt. to an unpaired or independent 2-sample t-test).
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+H0: Ranks (medians) between the two samples are equal 
+HA: Samples drawn from populations where ranks are not equal 
 
-```{r cars}
-summary(cars)
+### Create samples 
+
+`set.seed()` to create "pseudo-random but reproducible samples"
+
+```{r}
+set.seed(1414)
+gp_1 <- sample.int(20, size = 15, replace = TRUE)
+
+set.seed(1424)
+gp_2 <- sample.int(30, size = 15, replace = TRUE)
 ```
 
-## Including Plots
+Take a look at distrib. using `hist()` function 
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+hist(gp_1)
+hist(gp_2)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+Try a t-test so we can compare results:
+
+```{r}
+ttest <- t.test(gp_1, gp_2)
+
+# if these data were paired, add argument `paired =  TRUE`
+```
+
+This p-value means that, if these samples were drawn from populations with the same mean (i.e. if the null is true), there is a `r round(ttest$p.value,2)` probability of finding sample means *at least as different as these* by random chance.  
+
+[A more comprehensive explanation fo differences between groups ... actual means, data spread, effect size] ... there is no significant difference (t(df)= t-statistic value, p = ). 
+
+### Mann Whitney U rank based test
+
+Use `wilcox.test()` to perform 2-sample rank-based test 
+
+```{r}
+mwu <- wilcox.test(gp_1, gp_2)
+```
+
+This p-value means that, if these samples were drawn from populations with the same median, there is a `r round(mwu$p.value,2)` probability of finding sample medians *at least as different as these* by random chance.  
+
+... there is no significant difference in median (Mann-Whitney U; U = `r `mwu$statistic`, p = `r round(mwu$p.value,2)`).
+
+
+
+```{r}
+
+```
+
+
+
