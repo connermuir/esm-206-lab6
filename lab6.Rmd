@@ -65,11 +65,61 @@ This p-value means that, if these samples were drawn from populations with the s
 
 ... there is no significant difference in median (Mann-Whitney U; U = `r `mwu$statistic`, p = `r round(mwu$p.value,2)`).
 
+## Simple Linear Regression 
 
+Two *continuous quantitative* variables you are trying to understand the relationship between, and you think a linear relationship makes sense.  
+
+Use the `penguins` data exploring flipper length (x) versus body mass (y)
 
 ```{r}
+# Use view(penguins) to pull up the data 
+# Use exploratory scatterplot 
+
+ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+# body mass(g) = B1 (flipper length (mm))+ B0
 
 ```
 
+### Find the mdoel estimates for coefficients 
 
+Use the `lm()` function for linear model 
+
+```{r}
+penguin_lm <- lm(body_mass_g ~ flipper_length_mm, data = penguins)
+```
+
+`r penguin_lm$coefficients[2]`
+
+Indexing with [2] to access single value from vector 
+
+### Use `broom::tidy()` to get a tidy output from lm()
+
+```{r}
+penguin_lm_tidy <- tidy(penguin_lm)
+
+penguin_lm_tidy   
+```
+
+### Use broom::glance() to get output of model fit and statistical significance
+
+```{r}
+penguin_lm_glance <- glance(penguin_lm)
+
+penguin_lm_glance
+```
+
+### Use equatiomatics::exctract_eq() to return the model in LaTeX 
+
+```{r}
+extract_eq(model = penguin_lm, use_coefs = TRUE)
+```
+
+### Use `plot()` to automatically produce diagnostic plots 
+
+```{r}
+plot(penguin_lm)
+```
 
